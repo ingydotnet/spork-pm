@@ -1,20 +1,14 @@
 use inc::Module::Install;
-
-name('Spork');
-author('Brian Ingerson <ingy@cpan.org>');
-abstract('Slide Presentations (Only Really Kwiki)');
-license('perl');
-version_from('lib/Spork.pm');
-
-requires(qw(
-    perl 5.6.1
-    Kwiki 0.38
-    Spoon 0.22
-));
-
-clean_files('t/spork');
-install_script('spork');
-
-check_nmake();
-
-&WriteAll();
+ 
+all_from 'lib/Spork.pm';
+requires_from 'lib/Spork.pm';
+ack_xxx;
+readme_from;
+version_check;
+manifest_skip 'clean';
+ 
+install_script 'bin/spork';
+ 
+clean_files 't/spork';
+ 
+WriteAll;

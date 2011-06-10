@@ -1,4 +1,9 @@
 ---
+version: 0.21
+date:    Sat Jun 11 02:15:10 EST 2011
+changes:
+- Add Kwiki::Cache to prereqs - rt-15037
+---
 version: 0.20
 date:    Mon Apr  4 07:38:17 PDT 2005
 changes:
