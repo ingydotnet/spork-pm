@@ -1,7 +1,7 @@
 package Spork::Command;
 use Spork -Base;
 
-sub boolean_arguments { qw( -new -make -start -compress) }
+sub boolean_arguments { qw( -new -make -start -compress -showconf) }
 sub process {
     $self->call_handler(@_);
     $self->hub->remove_hooks;
@@ -12,6 +12,7 @@ sub call_handler {
     return $self->new_spork if $args->{-new};
     return $self->make_spork if $args->{-make};
     return $self->start_spork if $args->{-start};
+    return $self->show_config if $args->{-showconf};
     return $self->handle_compress(@others) if $args->{-compress};
     return $self->usage;
 }
@@ -63,12 +64,23 @@ sub start_spork {
     exec $command;
 }
 
+sub show_config {
+    my $conf = $self->hub->config;
+    delete $conf->{script_name};
+    delete $conf->{site_title};
+    delete $conf->{logo_image};
+    delete $conf->{main_page};
+    /_class$/ && delete $conf->{$_} for keys %$conf;
+    print YAML::Dump($conf);
+}
+
 sub usage {
     warn <<END;
 usage:
   spork -new                  # Generate a new slideshow in an empty directory
   spork -make                 # Turn the text into html slides
   spork -start                # Start the show in a browser
+  spork -showconf             # Dump a YAML of the effective configuration data
 END
 }
 
@@ -93,11 +105,12 @@ Spork::Command - Slide Presentations (Only Really Kwiki)
 
 =head1 AUTHOR
 
-Brian Ingerson <INGY@cpan.org>
+Ingy döt Net <ingy@cpan.org>
 
 =head1 COPYRIGHT
 
 Copyright (c) 2004, 2005. Brian Ingerson. All rights reserved.
+Copyright (c) 2007. Ingy döt Net. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

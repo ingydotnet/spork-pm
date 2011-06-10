@@ -2,43 +2,45 @@ package Spork::Config;
 use Kwiki::Config -Base;
 use mixin 'Spoon::Installer';
 
+# use Spork::Config::Default;
+
 const class_id => 'config';
+
+sub parse_yaml_file {
+    my $file = shift;
+#     $self->parse_yaml(io($file)->utf8->all);
+    $self->parse_yaml(io($file)->all);
+}
 
 sub default_configs {
     my @configs;
-    push @configs, "config.yaml"
-      if -f "config.yaml";
-    push @configs, "$ENV{HOME}/.sporkrc/config.yaml"
+# 	push @configs, Spork::Config::Default->hash_ref; # first the guesses
+    push @configs, "$ENV{HOME}/.sporkrc/config.yaml" # then the users defaults
       if defined $ENV{HOME} and -f "$ENV{HOME}/.sporkrc/config.yaml";
+    push @configs, "config.yaml" # and then the values for pwd
+      if -f "config.yaml";
     return @configs;
-}
-
-sub default_config {
-    my $config = super;
-    $config->{slides_file} = 'Spork.slides';
-    $config->{template_directory} = 'template/tt2';
-    $config->{template_path} = [ 'template/tt2' ];
-    return $config;
 }
 
 sub default_classes {
     (
-        config_class => 'Spork::Config',
-        registry_class => 'Spork::Registry',
-        hub_class => 'Spork::Hub',
-        formatter_class => 'Spork::Formatter',
-        template_class => 'Spork::Template::TT2',
         command_class => 'Spork::Command',
-        slides_class => 'Spork::Slides',
+        config_class => 'Spork::Config',
+        formatter_class => 'Spork::Formatter',
         hooks_class => 'Spoon::Hooks',
+        hub_class => 'Spork::Hub',
+        registry_class => 'Spork::Registry',
+        slides_class => 'Spork::Slides',
+        template_class => 'Spork::Template::TT2',
+
         # For Kwiki Plugins:
+        cache_class => 'Kwiki::Cache',
         cgi_class => 'Kwiki::CGI',
-        pages_class => 'Kwiki::Pages',
-        preferences_class => 'Kwiki::Preferences',
         css_class => 'Kwiki::CSS',
         javascript_class => 'Kwiki::Javascript',
-        cache_class => 'Kwiki::Cache',
-        kwiki_command_class => 'Kwiki::Command',
+        kwiki_command_class => 'Kwiki::Command::V1',
+        pages_class => 'Kwiki::Pages',
+        preferences_class => 'Kwiki::Preferences',
     )
 }
 
@@ -176,11 +178,12 @@ A list of template directories to be used by the template processing class.
 
 =head1 AUTHOR
 
-Brian Ingerson <INGY@cpan.org>
+Ingy döt Net <ingy@cpan.org>
 
 =head1 COPYRIGHT
 
 Copyright (c) 2004, 2005. Brian Ingerson. All rights reserved.
+Copyright (c) 2007. Ingy döt Net. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -201,36 +204,55 @@ __config.yaml__
 # 
 # See C<perldoc Spork::Config> for details on settings.
 ################################################################################
-author_name: Brian Ingerson
+
+# These will be guessed using getpwuid on the real uid
+
+author_name: Ingy döt Net
 author_email: ingy@cpan.org
 author_webpage: http://search.cpan.org/~ingy/
-copyright_string: Copyright &copy; 2005 Brian Ingerson
+copyright_string: Copyright &copy; 2007 Ingy döt Net
 
-banner_bgcolor: hotpink
-show_controls: 1
-mouse_controls: 0
+# Some styling:
+
+banner_bgcolor: orange
+logo_image: logo.png
 image_width: 350
 auto_scrolldown: 1
-logo_image: logo.png
-file_base: /Users/ingy/dev/cpan/Spork/
+show_controls: 0
+mouse_controls: 0
+link_previous: &lt; &lt; Previous
+link_next: Next &gt;&gt;
+link_index: Index
+
+
+# Some paths:
 
 slides_file: Spork.slides
 template_directory: template/tt2
 template_path: 
 - ./template/tt2
 slides_directory: slides
-download_method: wget
-character_encoding: utf-8
-link_previous: &lt; &lt; Previous
-link_next: Next &gt;&gt;
-link_index: Index
 
+# This one defaults to CWD, and will vary each time you run 'spork -make'
+# file_base: /Users/ingy/src/
+
+
+# These should probably go in ~/.sporkrc/config.yaml if they're wrong
+
+download_method: wget
 start_command: open slides/start.html
 
+character_encoding: utf-8
+
+
+
 # Change core classes here:
+
 # formatter_class: Spork::Formatter::Kwid
 
+
 # Set plugin classes here:
+
 # plugin_classes:
 # - Spork::S5
 # - Spork::S5Theme

@@ -1,5 +1,5 @@
 package Spork::Template::TT2;
-use Spoon::Template::TT2 -Base;
+use Spoon::Template -Base;
 use mixin 'Spoon::Installer';
 
 sub plugins { {} }
@@ -42,7 +42,11 @@ __top.html__
     <a accesskey="s" href="start.html">[% presentation_title %]</a>
 </td>
 <td align="right" width="13%">
-    [% slide_num ? "#$slide_num" : '&nbsp;' %]
+[% IF slide_num %]
+<a href="[% this_slide %]">#[% slide_num %]</a>
+[% ELSE %]
+&nbsp;
+[% END %]
 </td>
 </tr>
 </table>
@@ -144,6 +148,14 @@ div p {
     margin-bottom: 12pt;
     margin-left: 6pt;
     margin-right: 6pt;
+}
+
+.center-outer {
+    width: 100%;
+}
+
+.center-inner {
+    align: center;
 }
 
 small {

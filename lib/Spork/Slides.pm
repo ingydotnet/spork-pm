@@ -24,12 +24,16 @@ sub make_slides {
         $slide->{first_slide} = $slides[0]->{slide_name};
         $slide->{prev_slide} = $i 
           ? $self->make_link($slides[$i - 1]{slide_name}) : 'start.html';
+        $slide->{this_slide} = $slides[$i]  
+          ? $self->make_link($slides[$i]{slide_name}) : '';
         $slide->{next_slide} = $slides[$i + 1]  
           ? $self->make_link($slides[$i + 1]{slide_name}) : '';
         $self->slide_heading('');
         $self->image_url('');
-        my $parsed = $self->hub->formatter->text_to_parsed($content);
-        my $html = $parsed->to_html;
+
+        my ($html, $translate, $image) = $self->divide_content($content);
+
+#         my $html = $self->slide_to_html($content);
         $slide->{slide_heading} = $self->slide_heading;
         $slide->{image_html} = $self->get_image_html;
         my $output = $self->hub->template->process('slide.html',
@@ -37,6 +41,8 @@ sub make_slides {
             hub => $self->hub,
             index_slide => 'index.html',
             slide_content => $html,
+            translation => $translate,
+            image => $image,
             spork_version => "Spork v$Spork::VERSION",
         );
         my $file_name = $self->config->slides_directory . '/' . 
@@ -46,6 +52,37 @@ sub make_slides {
           if $slide->{slide_name} =~ /^slide\d+a?\.html$/;
     }
     $self->make_index;
+}
+
+sub divide_content {
+    my $content = shift;
+    my $translate = '';
+    my $image_line;
+    unless ($self->config->{no_translate}) {
+        while ($content =~ s/^# ?(.*\n)//m) {
+            $translate .= $1;
+        }
+    }
+    while ($content =~ s/^\.image:(.*\n)//m) {
+        $image_line = $1;
+    }
+    my ($html, $thtml, $image);
+    if ($translate) {
+        $thtml = $self->hub->formatter->text_to_html($translate);
+    }
+    if ($image_line) {
+        $image = {};
+        ($image->{src}, $image->{width}) = split /\s+/, $image_line;
+    }
+    if ($content) {
+        $html = $self->hub->formatter->text_to_html($content);
+    }
+    return ($html, $thtml, $image);
+}
+
+sub slide_to_html {
+    my $content = shift;
+    return $self->hub->formatter->text_to_html($content);
 }
 
 sub make_link {
@@ -170,11 +207,12 @@ Spork::Slides - Slide Presentations (Only Really Kwiki)
 
 =head1 AUTHOR
 
-Brian Ingerson <INGY@cpan.org>
+Ingy döt Net <ingy@cpan.org>
 
 =head1 COPYRIGHT
 
 Copyright (c) 2004, 2005. Brian Ingerson. All rights reserved.
+Copyright (c) 2007. Ingy döt Net. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -256,7 +294,7 @@ Putting a plus (+) at the start of a line creates a subslide effect.
 
 * For Relative Paths, Set This in the |config.yaml|
 
-    file_base: /Users/ingy/dev/cpan/Spork
+    file_base: /Users/ingy/src
 ----
 banner_bgcolor: lightblue
 ----

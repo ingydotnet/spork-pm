@@ -1,14 +1,6 @@
 package Spork;
-use 5.006001;
-use strict;
-use warnings;
-
+our $VERSION = '0.20';
 use Spoon 0.22 -Base;
-
-our $VERSION = '0.21';
-
-use Kwiki 0.38 ();
-use Kwiki::Cache 0.11 ();
 
 const config_class => 'Spork::Config';
 
@@ -25,6 +17,7 @@ Spork - Slide Presentations (Only Really Kwiki)
     spork -new
     vim Spork.slides
     vim config.yaml
+	spork -showconf
     spork -make
     spork -start
 
@@ -39,7 +32,10 @@ language similar to the syntax used in Kwiki wikis.
 
 =head1 MARKUP SYNTAX
 
-Spork markup is like Kwiki markup.
+B<NOTE>: The current syntax has changed in a non-backwards-compatible way
+as of release 0.16. This was done to keep pace with current Kwiki
+formatting rules. The main change is the markup for images. Please
+update old slideshows accordingly.
 
 =head2 Slides
 
@@ -184,19 +180,18 @@ See L<Spork::Config> for more information.
 
 You can easily extend and customize Spork by writing subclasses and putting
 them in the configuration or by fiddling with the template files. This version
-uses Template Toolkit templates by default.
+uses Template Toolkit templates by default. HTML::Mason support is being
+developed by Dave Rolsky.
 
 =head1 SEE ALSO
 
-L<Kwiki>, L<Spoon>
+Kwiki, Spoon, Spork::Template::Mason
 
 =head1 AUTHOR
 
-Ingy döt Net <ingy@cpan.org>
+Brian Ingerson <INGY@cpan.org>
 
 =head1 COPYRIGHT
-
-Copyright (c) 2011. Ingy döt Net. All rights reserved.
 
 Copyright (c) 2004, 2005. Brian Ingerson. All rights reserved.
 

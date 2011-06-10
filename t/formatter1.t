@@ -1,4 +1,4 @@
-use lib 'lib';
+use lib 't', 'lib';
 use strict;
 use Test::More 'no_plan';
 use Spork;
